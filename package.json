@@ -1,0 +1,15 @@
+{
+  "name": "usersdb-api",
+  "version": "1.0.0",
+  "description": "a database to upload and  store the details of users",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.1",
+    "express": "^4.16.4"
+  }
+}

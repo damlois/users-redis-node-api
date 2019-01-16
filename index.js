@@ -36,6 +36,7 @@ app.post('/upload', upload.single('myFile'),function(req,res){
     console.log(req.file);
     //read file from path and save it to redis database
     const file_path = './uploads/myFile.txt'
+
     fs.readFile(file_path, function (err, data) {
         if (err) res.send({error : err});
 
@@ -48,22 +49,44 @@ app.post('/upload', upload.single('myFile'),function(req,res){
             client.set(key,each);
         });  
 
+        console.log("File uploaded successfully!")
+
         res.send({error: false,
                 stausCode : 200,
                 message : 'File uploaded successfully'});
     });
 });
 
-//route to get file from redis
-app.get('/msisdn', (req,res) => {
-    let id = req.query.id;
-    client.get(id.toString(), (err,value) => {
-        if(err) res.send({error : err});
-        res.send({error : false,
+
+//route to get user details by msisdn from redis
+app.get('/msisdn', (req,res,next) => {
+    promise = new Promise(function(resolve, reject){
+    let msisdn = req.query.msisdn;
+    client.get(msisdn.toString(), (err,value) => {
+        if(value == null) {res.send({error : true,
+            statusCode: 404,
+            message: `${req.query.msisdn} Not Found`,
+            data: value})
+        }
+        else{
+            resolve(" get msisdn successful");
+            res.send({error : false,
                 statusCode: 200,
+                message: 'File fetched successfully',
                 data: value});
+        };
+    })
+    })
+    promise.then((message) => {
+        
+        console.log(message)
+
+        fs.unlink('uploads/myFile.txt', function (err) {
+            if (err) throw err;
+            console.log(`File deleted!`);
+        }); 
     });
-})
+});
 
 //listening message
 app.listen(port, () => {
